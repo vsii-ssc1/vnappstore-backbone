@@ -10,7 +10,8 @@ function Router(ds) {
 	});
 	
 	router.get('/api/user-info', function(req, res, next) {
-	  res.send({"email": req.user.preferredIdentity, "callname": req.user.callupname});
+		var email = req.user.username;
+	  res.send({"email": email, "callname": email.substring(0, email.indexOf('@'))});
 	});
 	
 	router.get('/agents-left', function(req, res, next) {
