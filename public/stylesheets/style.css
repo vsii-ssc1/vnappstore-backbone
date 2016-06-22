@@ -1,0 +1,140 @@
+body {
+  padding: 10px 50px 50px;
+  font: 14px;
+  font-family: 'Century Gothic', 'Lucida Grande', Helvetica, Arial, sans-serif;
+  color: #CFD0D1;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-color: #011630;
+  background-image: url("../images/Background_Image.png");
+}
+
+a {
+  color: #00B7FF;
+}
+
+.login-form {
+	margin: auto;
+	text-align:center;
+	max-width: 480px;
+}
+.app-image {
+	height: 140px;
+    margin: auto;
+    width: 100%;
+}
+.app-logo {
+	background-color: transparent;
+    background-image: url("../images/AppLaunchPage_320x480.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    height: 100%;
+    width: 100%;
+}
+
+.login-form form {
+	text-align: left;
+}
+
+.body-form {
+	margin: auto;
+	text-align:center;
+	max-width: 960px;
+}
+
+.body-content {
+	text-align:left;
+}
+
+.list-group-item-action {
+	text-align:right;
+	padding-right: 0;
+}
+a.poll-title {
+	line-height: 33px;
+}
+
+.modal-dialog .modal-title, .modal-dialog .title {
+	color: #064588;
+	font-weight: bold;
+}
+
+.modal-dialog label, .modal-dialog input {
+	color: #064588;
+	font-weight: normal;
+}
+.message {
+}
+
+.user-profile {
+	float:right;
+	position: absolute;
+	right: 20px;
+	top: 10px;
+}
+.user-info {
+	padding: 10px;
+}
+.user-info strong {
+	padding-left: 10px;
+}
+
+.user-profile .btn-sign-out {
+	background-color: transparent;
+    border-color: #ccc;
+    color: #CFD0D1;;
+}
+
+.select-box {
+	float:left;
+}
+
+.select-box-arrow {
+	float:left;
+	margin:110px 10px 0;
+}
+
+.select-box select {
+	max-width:360px;
+	min-width:360px;
+	min-height: 200px;
+}
+
+.select-box select option {
+	line-height: 24px;
+	height: 24px;
+}
+.modal-dialog-ext {
+	width:800px;	
+}
+
+.text-gray a.poll-title {
+	color:gray;
+}
+
+.reports-page #page-selection{
+	text-align: center;
+}
+.reports-page .select-order-type{
+	width: 250px;
+	margin: 10px;
+}
+.reports-page .select-order-type label.control-label {
+    width: 200px;
+    text-align: left;
+    float: left;
+}
+
+.reports-page .select-order-type select {
+    width: 220px;
+}
+
+.reports-page #contentData{
+	color: #00B7FF;
+}
+
+.reports-page #contentData .row-loading{
+	text-align: center;
+}

@@ -1,0 +1,71 @@
+# NodeJS prerequiresite python 2.7, gcc 4.8 for making or building from tarball source code
+# Dev group
+yum groupinstall 'Development Tools'
+
+
+# Python 2.7
+## Install
+curl -O https://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz
+tar -xzf Python-2.7.11.tgz
+cd Python-2.7.11
+./configure --prefix=/usr/local
+make && make altinstall
+
+## Current version
+python -V
+ls -ltr /usr/bin/python*
+## New one
+ls -ltr /usr/local/bin/python*
+## Create link
+ln -sf /usr/local/bin/python2.7 /usr/local/bin/python2
+ln -sf /usr/local/bin/python /usr/local/bin/python2
+
+# gcc 4.8
+## Install
+wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo
+yum install devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++
+
+## Uninstall if any
+yum remove devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++
+rm -f /etc/yum.repos.d/devtools-2.repo
+
+## Test
+/opt/rh/devtoolset-2/root/usr/bin/gcc --version
+## Create links
+ln -s /opt/rh/devtoolset-2/root/usr/bin/* /usr/local/bin/
+gcc --version
+
+# NodeJS SDK 4.4
+## Install
+curl -O https://nodejs.org/dist/v4.4.1/node-v4.4.1.tar.gz
+tar -xzf node-v4.4.1.tar.gz
+cd node-v4.4.1
+./configure --prefix=/usr/local/node-v4.4.1
+make && make install
+
+## Create soft-link
+ln -s /usr/local/node-v4.4.1 /usr/local/node
+ln -s /usr/local/node/bin/* /usr/local/bin/
+
+## test
+node -v
+npm -v
+
+## set python if any
+npm config set python /usr/bin/python2.7 -g
+
+# WorkdayIBM
+## Install dependencies:
+cd WorkdayIBM && npm install
+
+## run
+node .
+
+# Make the app start on boot
+cd WorkdayIBM
+sh scripts/create_start_on_boot.sh 
+## cmd available now:
+service workday status
+service workday stop
+service workday start
+

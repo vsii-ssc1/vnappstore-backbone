@@ -1,0 +1,36 @@
+# NodeJS prerequiresite python 2.7, gcc 4.8 for making or building from tarball source code, reference from deploy.txt
+
+## Developer Install Tools
+npm install express-generator -g
+npm install express -g
+
+## Create app
+express WorkdayIBM
+
+## install dependencies:
+cd WorkdayIBM && npm install
+
+## run the app: in debug mode
+DEBUG=WorkdayIBM:* npm start
+
+## OR
+export DEBUG=WorkdayIBM:*
+node .
+
+## express example: 
+# https://github.com/expressjs/express/tree/master/examples
+
+# DB2 connector 
+# https://github.com/strongloop/loopback-connector-db2
+# https://github.com/strongloop/loopback-datasource-juggler
+npm install loopback-datasource-juggler --save
+npm install loopback-connector-db2 --save
+npm install q --save
+npm install ejs --save
+npm install express-ejs-layouts --save
+npm install express-session --save
+npm install passport --save
+npm install passport-ldapauth --save
+
+# http://apidocs.strongloop.com/loopback/#persistedmodel-destroybyid
+# http://www.w3schools.com/bootstrap/bootstrap_get_started.asp

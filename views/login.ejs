@@ -1,0 +1,23 @@
+
+<div class="login-form">
+   <form role="form" method="post" action="/vnas/authen">
+   <h1 align="center">VN AppStore</h1>
+   <br/><br/>
+   <h4>Enter your ID and Password, then click on "Sign In" button to Log-In</h4>
+   <% if (error) { %>
+   <div class="alert alert-danger"> 
+   	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+   	<%= error %> 
+   </div>
+   <% } %>
+    <div class="form-group">
+      <label for="username">User ID:</label>
+      <input type="email" class="form-control input-lg" id="userid" name="userid" placeholder="Enter your Intranet ID">
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" class="form-control input-lg" id="passwd" name="passwd" placeholder="Enter your password">
+    </div>
+    <button type="submit" class="btn btn-primary">Sign In</button>
+  </form>
+</div>

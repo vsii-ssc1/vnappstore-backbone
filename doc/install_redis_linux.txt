@@ -1,0 +1,39 @@
+# Install #ref https://www.digitalocean.com/community/tutorials/how-to-install-and-use-redis
+wget http://download.redis.io/releases/redis-3.2.0.tar.gz
+tar -xzf redis-3.2.0.tar.gz && cd redis-3.2.0
+make
+
+### install by utils
+sh utils/install_server.sh
+## create a link
+ln -s /etc/init.d/redis_6379 /etc/init.d/redis
+
+### or yourself
+mkdir /etc/redis
+cp utils/redis_init_script /etc/init.d/redis
+cp src/redis-server /usr/local/bin/redis-server
+cp src/redis-cli /usr/local/bin/redis-cli
+cp redis.conf /etc/redis/6379.conf
+
+chmod a+rx /etc/init.d/redis
+chkconfig --add redis
+chkconfig --level 2345 redis on
+
+### If got the issue of chkconfig is not support, adding following line to the head of /etc/init.d/redis
+### chkconfig: 5 90 10
+
+# Config
+vi /etc/sysctl.conf
+vm.overcommit_memory=1
+
+sysctl vm.overcommit_memory=1
+sysctl -w fs.file-max=100000
+
+# Service commands
+service redis start/stop/restart
+
+#WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128
+then to solve that:
+add at /etc/sysctl.conf file, this line:
+net.core.somaxconn=65535
+sysctl -w net.core.somaxconn=65535
