@@ -26,7 +26,10 @@ var passport = require('passport');
 
 var AuthenStrategy = require('./common/authen_strategy');
 var CouchDB = require('./common/couchdb');
-var dbDs = new CouchDB({ "DB_URL": "https://d1f66d64-189e-40c0-95bf-2b62f921e9ac-bluemix:c9125aa40e059f214cd842b7fa9b22e0c2ffa0059b423db748acedc1acd80bdd@d1f66d64-189e-40c0-95bf-2b62f921e9ac-bluemix.cloudant.com" });
+
+var services = JSON.parse(process.env.VCAP_SERVICES || '{}');
+var couchURL = (services.cloudantNoSQLDB ? services.cloudantNoSQLDB[0].credentials.url : (process.env.DB_URL||'localhost:5984'));
+var dbDs = new CouchDB({ "DB_URL": couchURL});
 
 // catching for any unknown error
 var exception = {'uncaughtException': []};
