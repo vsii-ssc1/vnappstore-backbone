@@ -29,7 +29,7 @@ var CouchDB = require('./common/couchdb');
 
 var services = JSON.parse(process.env.VCAP_SERVICES || '{}');
 var couchURL = (services.cloudantNoSQLDB ? services.cloudantNoSQLDB[0].credentials.url : (process.env.DB_URL||'localhost:5984'));
-var dbDs = new CouchDB({ "DB_URL": couchURL});
+var datasource = new CouchDB({ "DB_URL": couchURL}).ds;
 
 // catching for any unknown error
 var exception = {'uncaughtException': []};
@@ -74,7 +74,7 @@ app.set('layout', 'layout');
 app.use(expressLayouts);
 
 //authorization setup
-passport.use(new AuthenStrategy());
+passport.use(new AuthenStrategy(datasource));
 app.use(session(sessionOptions));
 
 app.use(passport.initialize());
@@ -97,16 +97,18 @@ app.use(cookieParser());
 app.use('/vnas/public', express.static(path.join(__dirname, 'public')));
 
 // routes
-var routesHome = require('./routes/index')(dbDs);
+var routesHome = require('./routes/index')(datasource);
 var routesAuthen = require('./routes/authen')(passport, exception);
 
-var routesReqApps = require('./routes/request_app')(dbDs);
-var routesApiApps = require('./routes/api_apps')(dbDs);
-var routesApiReq = require('./routes/api_request')(dbDs);
+var routesReqApps = require('./routes/request_app')(datasource);
+var routesApiApps = require('./routes/api_apps')(datasource);
+var routesApiReq = require('./routes/api_request')(datasource);
+var routesApiSign = require('./routes/api_signup')(datasource);
 
 // Authencation section
 app.use('/vnas/authen', routesAuthen);
 app.use('/vnas/api/v1/apps', routesApiApps);
+app.use('/vnas/api/v1/signup', routesApiSign);
 
 // Check for every request whether it has authorization or not
 app.use(isRequiredAuthen);

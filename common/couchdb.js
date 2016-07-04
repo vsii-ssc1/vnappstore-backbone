@@ -23,10 +23,9 @@ function CouchDB(options) {
 			DB_PASS: '',// format as Base64 encode
 			DB_CERT: null,
 			
-			DB_USERS : 'app_users',/*{_id, _rev, mail, fullname, create_at}*/
-			DB_ROOMS : 'app_rooms',/*{_id, _rev, roomCode, members[], create_at}*/
-			DB_DRAWS : 'app_draws',/*{_id, _rev, roomId, userId, pageId, data[], create_at}*/
-			DB_FILES : 'app_files',/*{_id, _rev, roomId, userId, create_at}*/
+			DB_USERS : 'vnapp_users',/*{_id, _rev, mail, fullname, create_at}*/
+			DB_APPS  : 'vnapp_apps',/*{_id, _rev, roomCode, members[], create_at}*/
+			DB_FILES : 'vnapp_files',/*{_id, _rev, roomId, userId, create_at}*/
 			
 			DB_USERS_VIEWS : {
 				path: '_design/users',
@@ -39,8 +38,8 @@ function CouchDB(options) {
 					}
 			},
 
-			DB_ROOMS_VIEWS : {
-				path: '_design/rooms',
+			DB_APPS_VIEWS : {
+				path: '_design/apps',
 				data : { "language":"javascript",
 					"views": {
 						/*"by_id": {"map":"function(doc) { emit([ doc._id, doc.create_at], doc);}" },*/
@@ -59,17 +58,17 @@ function CouchDB(options) {
 				}
 			},
 
-			DB_DRAWS_VIEWS : {
-				path: '_design/draws',
-				data : { "language":"javascript",
-					"views": {
-						/*"by_room": {"map":"function(doc) { if (doc.roomId) {emit(doc.roomId, doc);}}" },*/
-						"by_room_order_by_date": {"map":"function(doc) { if (doc.roomId) {emit([ doc.roomId, doc.create_at], doc);}}" }/*,
-						"by_room_page": {"map":"function(doc) { if (doc.roomId && doc.pageId) {emit([doc.roomId, doc.pageId], doc);}}" },
-						"by_room_page_order_by_date": {"map":"function(doc) { if (doc.roomId && doc.pageId) {emit([ doc.roomId, doc.pageId, doc.create_at], doc);}}" }*/
-						}
-					}
-			},
+//			DB_DRAWS_VIEWS : {
+//				path: '_design/draws',
+//				data : { "language":"javascript",
+//					"views": {
+//						/*"by_room": {"map":"function(doc) { if (doc.roomId) {emit(doc.roomId, doc);}}" },*/
+//						"by_room_order_by_date": {"map":"function(doc) { if (doc.roomId) {emit([ doc.roomId, doc.create_at], doc);}}" }/*,
+//						"by_room_page": {"map":"function(doc) { if (doc.roomId && doc.pageId) {emit([doc.roomId, doc.pageId], doc);}}" },
+//						"by_room_page_order_by_date": {"map":"function(doc) { if (doc.roomId && doc.pageId) {emit([ doc.roomId, doc.pageId, doc.create_at], doc);}}" }*/
+//						}
+//					}
+//			},
 		
 		_appendConnCert: function(inputData){
 			var cert = this.DB_CERT;
@@ -137,7 +136,7 @@ function CouchDB(options) {
 		/**
 		 * get head for specified DB and document ID
 		 */
-		getHead: function(db, id, body) {
+		head: function(db, id, body) {
 			var rev = (body && body["_rev"]) ? '?rev='+body["_rev"] : '';
 			return this._openRequestGen('HEAD', db+'/'+id+rev, body);
 		},
@@ -154,11 +153,22 @@ function CouchDB(options) {
 			return this._openRequestGen('DELETE', db+'/'+id+'?rev='+body["_rev"], body);
 		},
 		
+		/* USERS */
+		addUser: function(docId, user) {
+			return this.insert(this.DB_USERS, docId, user);
+		},
+		
+		getUser: function(docId) {
+			return this.get(this.DB_USERS, docId);
+		},
+		
 		getUserByMail: function (mail) {
 			return this._openRequestGen('GET', this.DB_USERS+'/'+this.DB_USERS_VIEWS.path+'/_view/by_mail?key='+encodeURIComponent('"'+mail+'"'), null);
 		},
+		
+		
 		getRoomById: function (id) {
-			return this._openRequestGen('GET',  this.DB_ROOMS+'/'+id, null);
+			return this._openRequestGen('GET',  this.DB_APPS+'/'+id, null);
 		},
 		getRooms: function(userId, isOtherBoard, startDate, endDate, urlParams) {
 			//var json = {"startkey":[userId], "endkey": [userId]};
@@ -179,7 +189,7 @@ function CouchDB(options) {
 					json.startkey.push(startDate);
 					json.endkey.push(endDate||{});
 				}
-				view = this.DB_ROOMS_VIEWS.path + '/_view/by_member?';
+				view = this.DB_APPS_VIEWS.path + '/_view/by_member?';
 			}
 			
 			params = 'startkey='+encodeURIComponent(JSON.stringify(json.startkey));
@@ -191,14 +201,14 @@ function CouchDB(options) {
 				}
 			}
 			
-			var cpt = this.DB_ROOMS+'/'+view+ params;
+			var cpt = this.DB_APPS+'/'+view+ params;
 			return  this._openRequestGen('GET', cpt, null);		
 		},
 
 		queryRooms: function(searchText) {
-			view = this.DB_ROOMS_VIEWS.path + '/_view/search';
+			view = this.DB_APPS_VIEWS.path + '/_view/search';
 			
-			var cpt = this.DB_ROOMS+'/'+view;
+			var cpt = this.DB_APPS+'/'+view;
 			console.log("QUERYDATA", cpt);
 			
 			return this._openRequestGen('GET', cpt, null);	
@@ -239,8 +249,8 @@ function CouchDB(options) {
 				}
 			}
 			
-			view = this.DB_ROOMS_VIEWS.path + '/_view/'+viewPath+'?';
-			var cpt = this.DB_ROOMS+'/'+view+ params;
+			view = this.DB_APPS_VIEWS.path + '/_view/'+viewPath+'?';
+			var cpt = this.DB_APPS+'/'+view+ params;
 			 
 			return this._openRequestGen('GET', cpt, null);		
 		},
@@ -257,17 +267,17 @@ function CouchDB(options) {
 			return this.getRoom2('by_visib', visiType, keyword, startDate, endDate, urlParams);
 		},
 
-		getDrawByRoomOrderByDate: function (room_uuid, startDate, endDate) {
-			var json = {"startkey":[room_uuid, startDate], "endkey": [room_uuid, (endDate||{})]};
-			console.log(JSON.stringify(json))
-			var paramstr = 'startkey='+encodeURIComponent(JSON.stringify(json.startkey));
-			paramstr += '&endkey='+encodeURIComponent(JSON.stringify(json.endkey));
-			return this._openRequestGen('GET', this.DB_DRAWS+'/'+this.DB_DRAWS_VIEWS.path+'/_view/by_room_order_by_date?'+paramstr, null);
-		},
-		
-		getDrawById: function (key) {
-			return this._openRequestGen('GET',  this.DB_DRAWS+'/'+key, null);
-		},
+//		getDrawByRoomOrderByDate: function (room_uuid, startDate, endDate) {
+//			var json = {"startkey":[room_uuid, startDate], "endkey": [room_uuid, (endDate||{})]};
+//			console.log(JSON.stringify(json))
+//			var paramstr = 'startkey='+encodeURIComponent(JSON.stringify(json.startkey));
+//			paramstr += '&endkey='+encodeURIComponent(JSON.stringify(json.endkey));
+//			return this._openRequestGen('GET', this.DB_DRAWS+'/'+this.DB_DRAWS_VIEWS.path+'/_view/by_room_order_by_date?'+paramstr, null);
+//		},
+//		
+//		getDrawById: function (key) {
+//			return this._openRequestGen('GET',  this.DB_DRAWS+'/'+key, null);
+//		},
 		
 		_getRev: function(info) {
 			var rev = (info && info.response)? info.response.headers['etag'] : null;
@@ -314,7 +324,7 @@ function CouchDB(options) {
 			
 			//update for existing one
 			//failed means not existing so that put directly
-			this.getHead(this.DB_FILES, uri, {}).then(_update , _update);
+			this.head(this.DB_FILES, uri, {}).then(_update , _update);
 			
 			return def.promise;
 		},
@@ -369,7 +379,7 @@ function CouchDB(options) {
 			
 			var _self = this;
 			
-			this.getHead(this.DB_FILES, uri, {}).then(function(info) {
+			this.head(this.DB_FILES, uri, {}).then(function(info) {
 				var rev = _self._getRev(info);
 				_self.remove(self.DB_FILES, uri, {'_rev': rev}).then(function(resp){
 					def.resolve(resp);
@@ -458,8 +468,7 @@ function CouchDB(options) {
 			}
 			
 			_test(this.DB_USERS);
-			_test(this.DB_ROOMS);
-			_test(this.DB_DRAWS);
+			_test(this.DB_APPS);
 			_test(this.DB_FILES);
 		},
 		
@@ -485,8 +494,7 @@ function CouchDB(options) {
 			}
 			
 			_createDB(_self.DB_USERS, _self.DB_USERS_VIEWS);
-			_createDB(_self.DB_ROOMS, _self.DB_ROOMS_VIEWS);
-			_createDB(_self.DB_DRAWS, _self.DB_DRAWS_VIEWS);
+			_createDB(_self.DB_APPS, _self.DB_APPS_VIEWS);
 			_createDB(_self.DB_FILES);
 		}
 	};

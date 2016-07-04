@@ -7,12 +7,12 @@ body {
   background-repeat: no-repeat;
   background-color: transparent;
   background-color: #011630;
-  background-image: url("../images/Background_Image.png");
+  /* background-image: url("../images/Background_Image.png"); */
 }
 
-a {
+/* a {
   color: #00B7FF;
-}
+} */
 
 .login-form {
 	margin: auto;

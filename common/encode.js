@@ -11,29 +11,15 @@
 /* deposited with the VN. Copyright Office.                         */
 /*                                                                   */
 /* ***************************************************************** */
-var LocalStrategy = require('passport-local').Strategy;
-var encode = require('../common/encode')();
+var crypto = require("crypto");
 
-module.exports = function AuthenStrategy(ds) {
-	return new LocalStrategy({
-			usernameField : 'userid',
-			passwordField : 'passwd'
-		}, 
-		function(username, password, done) {
-			username = (username||'').toLowerCase();
-			
-			ds.getUser(username).then(function(resp){
-				var user = resp.body;
-				var secret = encode.sha256(username, password);
-				
-				if (user.secret == secret) {
-					return done(null, {'username': username, 'password': password}, { message: 'Welcome to VN AppStore' });
-				} else {
-					return done(null, false, { message: 'Incorrect password.' });
-				}
-			}, function(err){
-				console.log('get user failed', (err.error? err.error : err.response.body));
-				return done(null, false, { message: 'Incorrect username.' });
-			});
-	});
+module.exports = function Encode(ds) {
+	return {
+		sha256: function(key1, key2, type) {
+			//type = base46|hex...
+			type = (type||'base64');
+			var res = crypto.createHash("sha256").update(key1+':'+key2, 'utf8').digest(type);
+			return res;
+		}
+	};
 };
